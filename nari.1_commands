@@ -1,0 +1,262 @@
+.TH Nari 1
+
+.ce 1
+.SH -=-=-=-=-=-=-=-=-=- NARI DOCUMENTATION: COMMANDS -=-=-=-=-=-=-=-=-=-
+
+.SH NOMENCLATURE
+In the following sections, all the valid keywords and operations of the
+language will be listed. For each keyword or operation, a descriptive
+text will be shown describing what it does. Then, the parameters
+required by the function will be listed, starting from the one to be found
+on top of the stack. For example if a function says: 'Requires: NUMBER NUMBER'
+it means that it expects the stack to be in this state before being called:
+    [top   ]
+    NUMERIC VALUE
+    NUMERIC VALUE
+    ...
+    [bottom]
+
+Where ... means any value or no value. These values will be popped from the stack
+in order to execute the function. If these values are not found, an exception
+will be thrown.
+
+The return type of the function will be listed after the expected parameters.
+A value of this type will be
+pushed to the stack after the function is executed. For example, 'Returns: NUMBER'
+will push a numeric value to the stack. If the function doesn't list a return value,
+it won't push anything to the stack once it's executed.
+
+When explaining the behaviour of an operation, value types may be followed by a number
+between parentheses, for example STRING(1). This means the number of the value
+in the order they where popped from the stack. For example, if a function takes
+a STRING and a STRING value, in that order, the first STRING will be popped from the
+stack and then the second one, thus STRING(1) will refer to the first STRING value
+popped and STRING(2) to the remaining one.
+
+A value of listed with type VALUE means any value.
+
+.ce 1
+.SH -=-=-=-=-=-=-=-=-=- LITERALS -=-=-=-=-=-=-=-=-=-
+
+.SH NUMERIC VALUES
+.PP
+Any numeric literal found in the source code is pushed to the stack once
+the execution reaches it. Examples of valid number literals could be 8,
+90.1, -1000 and -9.123. Numbers with leading zeroes, for example 099
+will be pushed with the zeroes trimmed (thus pushing 99).
+
+.SH STRING VALUES
+Any string literal found in the source code is pushed to the stack once
+the execution reaches it. String literals are surounded by " (double quotes)
+and can contain any utf-8 character. Example of a string literals could
+be "hello world!" and "I love the nari programming language". Inside strings,
+the following escape sequences can be used:
+    - \\n to add a line break.
+    - \\t to add a tab character.
+    - \\\\ to add a \\ character.
+    - \\" to add a " character.
+
+.ce 1
+.SH -=-=-=-=-=-=-=-=-=- ARITHMETIC OPERATIONS -=-=-=-=-=-=-=-=-=-
+
+.SH + - / * % ^
+The basic arithmetic operations: addition, subtraction, division, multiplication, modulo and power respectively. Will pop two numbers, execute NUMBER(1) <operation>
+NUMBER(2) and then push the resulting value to the stack.
+    - Requires: NUMBER NUMBER
+    - Returns: NUMBER
+
+.SH abs
+Pops a number from the stack and pushes its absolute value.
+    - Requires: NUMBER
+    - Returns: NUMBER
+
+.SH sqrt
+Pops a number from the stack and pushes its square root.
+    - Requires: NUMBER
+    - Returns: NUMBER
+
+.SH random
+Pushes a random number between 0 (inclusive) and 1 (exclusive) to the stack.
+    - Returns: NUMBER
+
+.SH floor
+Pops a number, rounds it down and pushes the result back to the stack.
+    - Requires: NUMBER
+    - Returns: NUMBER
+
+.SH ceil
+Pops a number, rounds it up and pushes the result back to the stack.
+    - Requires: NUMBER
+    - Returns: NUMBER
+
+.ce 1
+.SH -=-=-=-=-=-=-=-=-=- STRING OPERATIONS -=-=-=-=-=-=-=-=-=-
+
+.SH join
+Pops the two topmost string values of the stack, joins them into a string
+and pushes the resulting string back. If any of the values if not of
+string type, it's implicitly converted to a string before being joined with
+the other value.
+    - Requires: VALUE VALUE
+    - Returns: STRING
+
+.SH replace
+Pops three strings and replaces all the occurrences of STRING(1) in STRING(3) with STRING(2).
+Then pushes the resulting string back to the stack.
+    - Requires: STRING STRING STRING
+    - Returns: STRING
+
+.SH split
+Pops two strings and breaks STRING(2) into a string array by using STRING(1) as
+a delimiter.
+    - Requires: STRING STRING
+    - Returns: STRING-ARRAY-TICKET
+
+.SH charAt
+Pops a string and a number and pushes the character found in the string at the
+position stated by the number.
+    - Requires: NUMBER STRING
+    - Returns: STRING
+
+.SH length
+Pops a string and pushes back its length.
+    - Requires: STRING
+    - Returns: NUMBER
+
+.SH find
+Pops two strings and returns the position of the first occurrence of STRING(1) in STRING(2).
+    - Requires: STRING STRING
+    - Returns: NUMBER
+
+.SH count
+Pops two strings and returns the number of occurrences of STRING(1) in STRING(2).
+    - Requires: STRING STRING
+    - Returns: NUMBER
+
+.SH substring
+Pops two numbers and a string and extracts a part of the string, beginning at the character at NUMBER(2) and pushing back to the stack the number of characters specified by NUMBER(1).
+    - Requires: NUMBER NUMBER STRING
+    - Returns: STRING
+
+.SH trim
+Pops a string and removes whitespace from both sides of it. Then pushes the resulting string back.
+    - Requires: STRING
+    - Returns: STRING
+
+.ce 1
+.SH -=-=-=-=-=-=-=-=-=- ARRAY OPERATIONS -=-=-=-=-=-=-=-=-=-
+
+.SH arrNewNumber
+Creates a new numeric array and pushes back a number array ticket that points to the created array.
+    - Returns: NUMBER-ARRAY-TICKET
+
+.SH arrNewString
+Creates a new string array and pushes back a string array ticket that points to the created array.
+    - Returns: STRING-ARRAY-TICKET
+
+.SH arrLength
+Pops an array ticket and pushes back the length of that array.
+    - Requires: ARRAY-TICKET
+    - Returns: NUMBER
+
+.SH arrCopy
+Pops an array ticket and pushes back a new string array ticket that references a copy of the array the popped ticket referenced.
+    - Requires: ARRAY-TICKET
+    - Returns: ARRAY-TICKET
+
+.SH arrGetAt
+Pops an array ticket and a number and pushes back the value found at the index stated by the number in the array referenced by the popped ticket.
+    - Requires: NUMBER ARRAY-TICKET
+    - Returns: VALUE
+
+.SH arrStoreAt
+Pops an array ticket, a number and a third value and stores this third value at the index stated by the number in the array referenced by the popped ticket.
+    - Requires: VALUE NUMBER ARRAY-TICKET
+
+.SH arrClear
+Pops an array ticket and empties the array referenced by it.
+    - Requires: ARRAY-TICKET
+
+.SH arrPush
+Pops a value and an array ticket and adds the value at the end of the array referenced by the array ticket.
+    - Requires: VALUE ARRAY-TICKET
+
+.ce 1
+.SH -=-=-=-=-=-=-=-=-=- BOOLEAN OPERATIONS -=-=-=-=-=-=-=-=-=-
+
+.SH = != < > <= >=
+TODO
+
+.SH not
+TODO
+
+.ce 1
+.SH -=-=-=-=-=-=-=-=-=- I/O OPERATIONS -=-=-=-=-=-=-=-=-=-
+
+.SH accept
+TODO
+
+.SH display
+TODO
+
+.SH execute
+TODO Pushea el exit code
+
+.SH poppen
+TODO Pushea el texto
+
+.SH acceptUntilEof
+TODO
+
+.SH fileLoad
+TODO
+
+.SH fileWrite
+TODO
+
+.SH fileAppend
+TODO
+
+.SH fileExists
+TODO
+
+.SH fileList
+TODO
+
+.ce 1
+.SH -=-=-=-=-=-=-=-=-=- CONTROL FLOW OPERATIONS -=-=-=-=-=-=-=-=-=-
+
+.SH clone
+TODO
+
+.SH delete
+TODO
+
+.SH toAux(...)
+TODO
+
+.SH aux(...)
+TODO
+
+.SH exit
+TODO
+
+.SH while ... do ... repeat
+TODO
+
+.SH if ... then ... elif ... else ... endif
+TODO
+
+.SH sub ... does ... endsub
+TODO
+
+.SH AUTHOR
+This document was written by Martín del Río.
+
+.SH REPORTING BUGS
+Report any bugs to <https://github.com/lartu/nari>.
+
+.SH COPYRIGHT
+Copyright © 2017 - 2019, Martín del Río. Nari may be copied only under the terms of the GNU General Public License 3.0, which may be found in the nari repository.
+.br
+This is free software: you are free to change and redistribute it. There is NO WARRANTY, to the extent permitted by law.
