@@ -275,36 +275,38 @@ def execute(tokens):
                 else:
                     stack.append((0, 1))
             elif t[0] == "while":
-                if i + 1 == len(tokens) or getNextToken(tokens, i, 1)[1] != 9:
-                    throwError(f"block expected after while on line {lineNumber}.")
+                if i + 2 == len(tokens) or getNextToken(tokens, i, 1)[1] != 9 or getNextToken(tokens, i, 2)[1] != 9:
+                    throwError(f"two blocks expected after while on line {lineNumber}.")
                 while True:
+                    execute(getNextToken(tokens, i, 1)[0])
                     guard = popStack(t[0], lineNumber)
                     if guard[1] != 1:
                         throwError(f"while guard is not a number on line {lineNumber}.")
                     elif math.isclose(guard[0], 0, rel_tol=1e-6):
                         break
                     else:
-                        execute(getNextToken(tokens, i, 0))
-                i += 1
+                        execute(getNextToken(tokens, i, 2)[0])
+                i += 2
             elif t[0] == "if":
-                if i + 1 == len(tokens) or getNextToken(tokens, i, 1)[1] != 9:
-                    throwError(f"block expected after if on line {lineNumber}.")
+                if i + 2 == len(tokens) or getNextToken(tokens, i, 1)[1] != 9 or getNextToken(tokens, i, 2)[1] != 9:
+                    throwError(f"two blocks expected after if on line {lineNumber}.")
+                execute(getNextToken(tokens, i, 1)[0])
                 guard = popStack(t[0], lineNumber)
                 guardIsTrue = not(math.isclose(guard[0], 0, rel_tol=1e-6))
-                hasElse = (i + 3 < len(tokens) and getNextToken(tokens, i, 2)[1] == 2 and getNextToken(tokens, i, 2)[0] == "else")
+                hasElse = (i + 4 < len(tokens) and getNextToken(tokens, i, 3)[1] == 2 and getNextToken(tokens, i, 3)[0] == "else")
                 if guard[1] != 1:
                     throwError(f"if guard is not a number on line {lineNumber}.")
                 elif guardIsTrue:
-                    execute(getNextToken(tokens, i, 1)[0])
+                    execute(getNextToken(tokens, i, 2)[0])
                 elif hasElse: #else
-                    if getNextToken(tokens, i, 3)[1] == 9:
-                        execute(getNextToken(tokens, i, 3)[0])
+                    if getNextToken(tokens, i, 4)[1] == 9:
+                        execute(getNextToken(tokens, i, 4)[0])
                     else:
                         throwError(f"block expected after else of if stated on line {lineNumber}.")
                 if hasElse:
-                    i += 3
+                    i += 4
                 else:
-                    i += 1
+                    i += 2
             elif t[0] == "aux":
                 if i + 2 >= len(tokens) or getNextToken(tokens, i, 1)[1] != 2 or getNextToken(tokens, i, 2)[1] != 9:
                     throwError(f"name and block expected after aux on line {lineNumber}.")

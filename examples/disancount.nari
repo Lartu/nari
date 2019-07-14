@@ -1,0 +1,19 @@
+#-------------------------#
+#   Disan Count in Nari   #
+# by Martín del Río, 2019 #
+#-------------------------#
+
+# auxiliary functions #
+aux println [print "\n" print]
+
+# count down from 20 #
+20 @max set
+
+while [0 @max get <] [
+    if [@max get 2 % 0 =] [
+        @max get println
+    ]
+    @max get 1 - @max set
+]
+
+

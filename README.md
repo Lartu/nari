@@ -1,5 +1,3 @@
-![Nari Logo](images/logo-md.png)
-
 # Nari 🐹
 Nari is a stack-based, dynamically-typed scripting language designed to be powerful, simple and portable.
 While it's not as intuitive as [other languages I've designed](https://github.com/lartu/ldpl), Nari aims
