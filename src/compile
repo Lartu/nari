@@ -1,3 +1,0 @@
-cython -3 --embed nari.py
-gcc nari.c `/usr/bin/python3-config --cflags --ldflags` -fPIC -o nari
-

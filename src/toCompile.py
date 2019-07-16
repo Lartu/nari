@@ -3,8 +3,8 @@ import math
 import readline
 
 # constants
-VERSION = "@MAYORVERSION"
-COMMIT = "@COMMITVERSION"
+VERSION = "4"
+COMMIT = "1"
 
 # global variables
 stack = []
@@ -71,7 +71,7 @@ def evaluateParameters():
                 displayDocsInfo()
                 print("\n Nari may be copied only under the terms of the GNU General")
                 print(" Public License 3.0, which may be found in the Nari repository.")
-                print("\n Compiled on \033[1;35m@COMPILEDATE\033[0m at \033[1;35m@COMPILEHOUR\033[0m.\n")
+                print("\n Compiled on \033[1;35m2019-07-16\033[0m at \033[1;35m02:16:48\033[0m.\n")
                 quit(0)
             elif arg == "-c": # Read from command line
                 sourceFile = None
