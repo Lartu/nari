@@ -115,7 +115,6 @@ def splitTokens(sourceCode):
             currentToken = ""
             if c == "\n":
                 lineNumber += 1
-                tokens.append("")
             elif c == "]":
                 tokens.append("]")
         elif c == '"' and not(escapingCharacter):
@@ -125,7 +124,7 @@ def splitTokens(sourceCode):
             if inString:
                 escapingCharacter = True
             else:
-                throwError(f"escape sequence found outside string on line {lineNumber}.")
+                throwError(f"escape sequence found outside string.")
         elif escapingCharacter:
             if c == '"' or c == "\\":
                 currentToken += c
@@ -136,7 +135,7 @@ def splitTokens(sourceCode):
             elif c == "t":
                 currentToken += "\t"
             else:
-                throwError(f"unknown escape sequence \\{c} on line {lineNumber}.")
+                throwError(f"unknown escape sequence \\{c}.")
             escapingCharacter = False
         elif c == "[" and not(inString):
             tokens.append("[")
@@ -158,7 +157,7 @@ def lexTokens(tokens, _from=0):
     # 0 - string
     # 1 - number
     # 2 - statement
-    # 3 - line break
+    # 3 - 
     # 4 - variable ticket
     # 5 - auxiliar function
     # 6 - list
@@ -175,9 +174,7 @@ def lexTokens(tokens, _from=0):
             if inBlock < 0:
                 break
         if inBlock == 0:
-            if len(token) == 0:
-                tokenList.append((token, 3))
-            elif token[0] == '"':
+            if token[0] == '"':
                 tokenList.append((token[1:-1], 0))
             elif token[0] == '@':
                 tokenList.append((token, 4))
@@ -203,12 +200,12 @@ def throwError(msg):
     else:
         quit(1)
 
-def popStack(command, lineNumber):
+def popStack(command):
     global stack
     if len(stack) > 0:
         return stack.pop()
     else:
-        throwError(f"empty stack when trying to execute {command} on line {lineNumber}");
+        throwError(f"empty stack when trying to execute {command}.");
 
 def getVar(token):
     if token[0] in variables:
@@ -242,7 +239,7 @@ def nariJoin(a, b, lineNumber):
     if (a[1] == 0 or a[0] == 1)  and (b[1] == 0 or b[1] == 1):
         return (str(b[0]) + str(a[0]), 0)
     else:
-        throwError(f"trying to join incompatible types on line {lineNumber}.")
+        throwError(f"trying to join incompatible types.")
 
 def getNextToken(tokens, i, skip):
     while i < len(tokens):
@@ -262,60 +259,58 @@ def execute(tokens):
         t = tokens[i]
         if t[1] == 0 or t[1] == 1 or t[1] == 4: # Number, Strings or variable tickets
             stack.append(t)
-        elif t[1] == 3: # Line break
-            lineNumber += 1
         elif t[1] == 9: # Blocks
             execute(t[0])
         elif t[1] == 2: # Statements
             if t[0] == "print":
-                nariPrint(popStack(t[0], lineNumber))
+                nariPrint(popStack(t[0]))
                 printedSomething = True
             elif t[0] == "join":
-                stack.append(nariJoin(popStack(t[0], lineNumber), popStack(t[0], lineNumber), lineNumber))
+                stack.append(nariJoin(popStack(t[0]), popStack(t[0]), lineNumber))
             elif t[0] == "+":
-                a = popStack(t[0], lineNumber)
-                b = popStack(t[0], lineNumber)
+                a = popStack(t[0])
+                b = popStack(t[0])
                 if a[1] != 1 or a[1] != 1:
-                    throwError(f"trying to add non-numeric values on line {lineNumber}.")
+                    throwError(f"trying to add non-numeric values.")
                 else:
                     stack.append((a[0] + b[0], 1))
             elif t[0] == "-":
-                a = popStack(t[0], lineNumber)
-                b = popStack(t[0], lineNumber)
+                a = popStack(t[0])
+                b = popStack(t[0])
                 if a[1] != 1 or a[1] != 1:
-                    throwError(f"trying to subtract non-numeric values on line {lineNumber}.")
+                    throwError(f"trying to subtract non-numeric values.")
                 else:
                     stack.append((b[0] - a[0], 1))
             elif t[0] == "*":
-                a = popStack(t[0], lineNumber)
-                b = popStack(t[0], lineNumber)
+                a = popStack(t[0])
+                b = popStack(t[0])
                 if a[1] != 1 or a[1] != 1:
-                    throwError(f"trying to multiply non-numeric values on line {lineNumber}.")
+                    throwError(f"trying to multiply non-numeric values.")
                 else:
                     stack.append((a[0] * b[0], 1))
             elif t[0] == "/":
-                a = popStack(t[0], lineNumber)
-                b = popStack(t[0], lineNumber)
+                a = popStack(t[0])
+                b = popStack(t[0])
                 if a[1] != 1 or a[1] != 1:
-                    throwError(f"trying to divide non-numeric values on line {lineNumber}.")
+                    throwError(f"trying to divide non-numeric values.")
                 else:
                     stack.append((b[0] / a[0], 1))
             elif t[0] == "%":
-                a = popStack(t[0], lineNumber)
-                b = popStack(t[0], lineNumber)
+                a = popStack(t[0])
+                b = popStack(t[0])
                 if a[1] != 1 or a[1] != 1:
-                    throwError(f"trying to modulo non-numeric values on line {lineNumber}.")
+                    throwError(f"trying to modulo non-numeric values.")
                 else:
                     stack.append((float(int(b[0]) % int(a[0])), 1))
             elif t[0] == "copy":
                 if len(stack) == 0:
-                    throwError(f"empty stack when trying to copy on line {lineNumber}")
+                    throwError(f"empty stack when trying to copy")
                 stack.append((stack[len(stack)-1][0], stack[len(stack)-1][1]))
             elif t[0] == "del":
-                popStack(t[0], lineNumber)
+                popStack(t[0])
             elif t[0] == "=":
-                a = popStack(t[0], lineNumber)
-                b = popStack(t[0], lineNumber)
+                a = popStack(t[0])
+                b = popStack(t[0])
                 if a[1] != b[1] or a[0] != b[0]:
                     stack.append((0, 1))
                 else:
@@ -329,22 +324,22 @@ def execute(tokens):
                     else:
                         stack.append((0, 1))
             elif t[0] == "<":
-                a = popStack(t[0], lineNumber)
-                b = popStack(t[0], lineNumber)
+                a = popStack(t[0])
+                b = popStack(t[0])
                 if a[1] != b[1] or (a[1] != 0 and a[1] != 1):
-                     throwError(f"trying to compare order of invalid values on line {lineNumber}.")
+                     throwError(f"trying to compare order of invalid values.")
                 elif b[0] < a[0]:
                     stack.append((1, 1))
                 else:
                     stack.append((0, 1))
             elif t[0] == "while":
                 if i + 2 == len(tokens) or getNextToken(tokens, i, 1)[1] != 9 or getNextToken(tokens, i, 2)[1] != 9:
-                    throwError(f"two blocks expected after while on line {lineNumber}.")
+                    throwError(f"two blocks expected after while.")
                 while True:
                     execute(getNextToken(tokens, i, 1)[0])
-                    guard = popStack(t[0], lineNumber)
+                    guard = popStack(t[0])
                     if guard[1] != 1:
-                        throwError(f"while guard is not a number on line {lineNumber}.")
+                        throwError(f"while guard is not a number.")
                     elif math.isclose(guard[0], 0, rel_tol=1e-6):
                         break
                     else:
@@ -352,27 +347,27 @@ def execute(tokens):
                 i += 2
             elif t[0] == "if":
                 if i + 2 == len(tokens) or getNextToken(tokens, i, 1)[1] != 9 or getNextToken(tokens, i, 2)[1] != 9:
-                    throwError(f"two blocks expected after if on line {lineNumber}.")
+                    throwError(f"two blocks expected after if.")
                 execute(getNextToken(tokens, i, 1)[0])
-                guard = popStack(t[0], lineNumber)
+                guard = popStack(t[0])
                 guardIsTrue = not(math.isclose(guard[0], 0, rel_tol=1e-6))
                 hasElse = (i + 4 < len(tokens) and getNextToken(tokens, i, 3)[1] == 2 and getNextToken(tokens, i, 3)[0] == "else")
                 if guard[1] != 1:
-                    throwError(f"if guard is not a number on line {lineNumber}.")
+                    throwError(f"if guard is not a number.")
                 elif guardIsTrue:
                     execute(getNextToken(tokens, i, 2)[0])
                 elif hasElse: #else
                     if getNextToken(tokens, i, 4)[1] == 9:
                         execute(getNextToken(tokens, i, 4)[0])
                     else:
-                        throwError(f"block expected after else of if stated on line {lineNumber}.")
+                        throwError(f"block expected after else of if stated.")
                 if hasElse:
                     i += 4
                 else:
                     i += 2
             elif t[0] == "aux":
                 if i + 2 >= len(tokens) or getNextToken(tokens, i, 1)[1] != 2 or getNextToken(tokens, i, 2)[1] != 9:
-                    throwError(f"name and block expected after aux on line {lineNumber}.")
+                    throwError(f"name and block expected after aux.")
                 aux[getNextToken(tokens, i, 1)[0]] = getNextToken(tokens, i, 2)[0]
                 i += 2
             elif t[0] == "return":
@@ -384,51 +379,51 @@ def execute(tokens):
                     value = input()
                     stack.append((value, 0))
                 except:
-                    throwError(f"input error on line {lineNumber}.")
+                    throwError(f"input error.")
             elif t[0] == "tonum": # Should be moved into a library TODO
-                a = popStack(t[0], lineNumber)
+                a = popStack(t[0])
                 if a[1] != 0:
-                    throwError(f"cannot cast non-string value to number on line {lineNumber}.")
+                    throwError(f"cannot cast non-string value to number.")
                 try:
                     stack.append((float(a[0]), 1))
                 except:
-                    throwError(f"cannot cast value to number on line {lineNumber}.")
+                    throwError(f"cannot cast value to number.")
             elif t[0] == "isnum": # Should be moved into a library TODO
-                a = popStack(t[0], lineNumber)
+                a = popStack(t[0])
                 if a[1] != 0:
-                    throwError(f"cannot check if non-string value is numeric on line {lineNumber}.")
+                    throwError(f"cannot check if non-string value is numeric.")
                 if(isNumber(a[0])):
                     stack.append((1, 1))
                 else:
                     stack.append((0, 1))
             elif t[0] == "at":
-                a = popStack(t[0], lineNumber)
-                b = popStack(t[0], lineNumber)
+                a = popStack(t[0])
+                b = popStack(t[0])
                 if not(a[1] == 1 and (b[1] == 0 or b[1] == 6)) and not((a[1] == 1 or a[1] == 0) and b[1] == 7):
-                    throwError(f"trying to access an index of an element that is neither a string nor a list nor a map on line {lineNumber}.")
+                    throwError(f"trying to access an index of an element that is neither a string nor a list nor a map.")
                 elif b[1] == 7:
                     if a[0] in b[0]:
                         stack.append(b[0][a[0]])
                     else:
-                        throwError(f"map has no key called {a[0]} on line {lineNumber}.")
+                        throwError(f"map has no key called {a[0]}.")
                 else:
                     stack.append(b[0][int(a[0])])
             elif t[0] == "size":
-                b = popStack(t[0], lineNumber)
+                b = popStack(t[0])
                 if b[1] != 0 and b[1] != 6 and b[1] != 7:
-                    throwError(f"trying to get length of an element that is neither a string nor a list nor a map on line {lineNumber}.")
+                    throwError(f"trying to get length of an element that is neither a string nor a list nor a map.")
                 else:
                     stack.append((len(b[0]), 1))
             elif t[0] == "remove":
-                a = popStack(t[0], lineNumber)
-                b = popStack(t[0], lineNumber)
+                a = popStack(t[0])
+                b = popStack(t[0])
                 if not(a[1] == 1 and b[1] == 6) and not((a[1] == 1 or a[1] == 0) and b[1] == 7):
-                    throwError(f"trying to remove an index of an element that is not a list nor a map on line {lineNumber}.")
+                    throwError(f"trying to remove an index of an element that is not a list nor a map.")
                 elif b[1] == 7:
                     if a[0] in b[0]:
                         b[0].pop(a[0])
                     else:
-                        throwError(f"map has no key called {a[0]} on line {lineNumber}.")                
+                        throwError(f"map has no key called {a[0]}.")                
                 else:
                     b[0].pop(int(a[0]))
                 stack.append((b[0], b[1]))
@@ -437,42 +432,42 @@ def execute(tokens):
             elif t[0] == "{}":
                 stack.append(({}, 7))
             elif t[0] == "push":
-                a = popStack(t[0], lineNumber)
-                b = popStack(t[0], lineNumber)
+                a = popStack(t[0])
+                b = popStack(t[0])
                 if b[1] != 6:
-                    throwError(f"cannot push to non-list on line {lineNumber}.")
+                    throwError(f"cannot push to non-list.")
                 else:
                     b[0].append(a)
                     stack.append((b[0], 6))
             elif t[0] == "scribe":
-                b = popStack(t[0], lineNumber)
-                a = popStack(t[0], lineNumber)
-                c = popStack(t[0], lineNumber)
+                b = popStack(t[0])
+                a = popStack(t[0])
+                c = popStack(t[0])
                 if c[1] != 7:
-                    throwError(f"cannot scribe to non-map on line {lineNumber}.")
+                    throwError(f"cannot scribe to non-map.")
                 if b[1] != 0 and b[1] != 1:
-                    throwError(f"cannot scribe to non-numeric or non-string keys on line {lineNumber}.")
+                    throwError(f"cannot scribe to non-numeric or non-string keys.")
                 else:
                     c[0][b[0]] = a
                     stack.append((c[0], 7))
             elif t[0] == "set":
-                a = popStack(t[0], lineNumber)
-                b = popStack(t[0], lineNumber)
+                a = popStack(t[0])
+                b = popStack(t[0])
                 if a[1] != 4:
-                    throwError(f"cannot set to non-variable-ticket on line {lineNumber}.")
+                    throwError(f"cannot set to non-variable-ticket.")
                 else:
                     variables[a[0]] = b
             elif t[0] == "get":
-                a = popStack(t[0], lineNumber)
+                a = popStack(t[0])
                 if a[1] != 4:
-                    throwError(f"cannot set to non-variable-ticket on line {lineNumber}.")
+                    throwError(f"cannot set to non-variable-ticket.")
                 else:
                     stack.append(variables[a[0]])
             else: # If its not a known statement then it is an auxiliar function
                 if t[0] in aux:
                     execute(aux[t[0]])
                 else:
-                    throwError(f"unknown function {t[0]} called on line {lineNumber}.")
+                    throwError(f"unknown function {t[0]} called.")
         i += 1
 
 def runCode(sourceCode):
