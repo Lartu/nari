@@ -1,0 +1,42 @@
+#-------------------------#
+#    Fibonacci in Nari    #
+# by Martín del Río, 2019 #
+#-------------------------#
+
+# auxiliary functions #
+aux println [print "\n" print]
+aux or [+]
+aux not [if [] [0] else [1]]
+aux > [
+    @>a set @>b set
+    @>a get @>b get =
+    @>b get @>a get <
+    or not
+]
+aux >= [
+    @>=a set @>=b set
+    @>=a get @>=b get =
+    @>=b get @>=a get >
+    or
+]
+
+# print the first 100 fibonacci numbers #
+100 @max set
+
+0 @a set
+1 @b set
+
+if [@max get 1 >=] [0 println]
+if [@max get 2 >=] [0 println]
+
+while [0 @max get <] [
+    @a get @swap set
+    @b get @a set
+    @swap get @b get + @b set
+    @b get println
+    @max get 1 - @max set
+]
+
+
+
+

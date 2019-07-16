@@ -1,0 +1,19 @@
+syntax "Nari" ".(nar|.nari|.n)$"
+
+# Data types
+color red "(|-)[0-9][0-9]*"
+color magenta "\"[^"]*\""
+color red "(\(\)|\{\})"
+
+# Variables
+color yellow "@\<[^ ]*\>"
+
+# Statements
+color cyan "\<(print|join|copy|del|return|quit|input|tonum|isnum|at|size|remove|push|scribe|set|get)\>"
+color cyan "(\+|\-|\*|\/|\%|\=|<)"
+
+# Special statements
+color blue "(if|else|while|aux)"
+
+# Comments
+color green "\#.*\#"

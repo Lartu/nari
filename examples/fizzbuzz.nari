@@ -1,0 +1,29 @@
+#-------------------------#
+#    FizzBuzz in Nari     #
+# by Martín del Río, 2019 #
+#-------------------------#
+
+# auxiliary functions #
+aux println [print "\n" print]
+aux or [+]
+aux not [if [] [0] else [1]]
+
+1 @i set
+
+while [@i get 101 <] [
+    if [@i get 3 % 0 =] [
+           "Fizz" print
+    ]
+    if [@i get 5 % 0 =] [
+           "Buzz" print
+    ]
+    if [@i get 5 % 0 = @i get 3 % 0 = or not] [
+        @i get print
+    ]
+    "\n" print
+    @i get 1 + @i set
+]
+
+
+
+

@@ -1,0 +1,25 @@
+# 99 bottles of beer #
+# In Nari, by Martín del Río #
+
+
+# Helpful functions #
+aux not [if [] [0] else [1]]
+aux pluralBottles [if [@bottles get 1 =] ["bottle"] else ["bottles"] print]
+aux passAround [
+    if [@bottles get 1 =] [
+        "no more bottles of beer on the wall.\n" print
+    ] else [
+        pluralBottles " of beer on the wall.\n" print
+    ]
+]
+
+99 @bottles set
+
+while [@bottles get 0 = not] [
+    @bottles get print " " print pluralBottles " of beer on the wall, " print
+    @bottles get print " " print pluralBottles " of beer.\n" print
+    "Take one, pass it around, "
+    @bottles get 1 - @bottles set
+    passAround
+]
+

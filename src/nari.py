@@ -384,19 +384,19 @@ def execute(tokens):
                     value = input()
                     stack.append((value, 0))
                 except:
-                    throwError(f"\ninput error on line {lineNumber}.")
+                    throwError(f"input error on line {lineNumber}.")
             elif t[0] == "tonum": # Should be moved into a library TODO
                 a = popStack(t[0], lineNumber)
                 if a[1] != 0:
-                    throwError(f"\ncannot cast non-string value to number on line {lineNumber}.")
+                    throwError(f"cannot cast non-string value to number on line {lineNumber}.")
                 try:
                     stack.append((float(a[0]), 1))
                 except:
-                    throwError(f"\ncannot cast value to number on line {lineNumber}.")
+                    throwError(f"cannot cast value to number on line {lineNumber}.")
             elif t[0] == "isnum": # Should be moved into a library TODO
                 a = popStack(t[0], lineNumber)
                 if a[1] != 0:
-                    throwError(f"\ncannot check if non-string value is numeric on line {lineNumber}.")
+                    throwError(f"cannot check if non-string value is numeric on line {lineNumber}.")
                 if(isNumber(a[0])):
                     stack.append((1, 1))
                 else:
